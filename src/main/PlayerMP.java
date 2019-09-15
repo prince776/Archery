@@ -3,6 +3,7 @@ package main;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 
 public class PlayerMP {
@@ -41,5 +42,9 @@ public class PlayerMP {
 		
 	}
 
+	
+	public Rectangle getRect(){
+		return body.getOuterRect();
+	}
 	
 }

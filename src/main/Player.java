@@ -3,6 +3,7 @@ package main;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import main.Body.Limb;
@@ -49,6 +50,8 @@ public class Player {
 	}
 	
 	public void render(Graphics g,Assets assets,Game game){
+		body.render(g);
+
 		for(int i=arrows.size()-1;i>=0;i--){
 			arrows.get(i).render(g,assets);
 		}
@@ -57,7 +60,6 @@ public class Player {
 			arrowsMP.get(i).render(g,assets);
 		}
 		
-		body.render(g);
 		
 		g.setColor(Color.white);
 		if(tx1 != 0 && ty1 != 0){
@@ -112,7 +114,7 @@ public class Player {
 				Vector vel = new Vector(tx1-tx2 , ty1-ty2);
 				float xOff = calculateXOff(vel);
 				arrows.add(new Arrow(new Vector(body.head.x-xOff,body.head.y -
-						body.head.r-10), vel, new Vector(), Color.LIGHT_GRAY,true));
+						body.head.r-30), vel, new Vector(), Color.LIGHT_GRAY,true));
 //				adjustLimb(body.leftH,arrows.get(arrows.size()-1));
 //				adjustLimb(body.rightH, arrows.get(arrows.size()-1));
 
@@ -139,13 +141,13 @@ public class Player {
 	}
 	
 	public void launchArrow(Sounds sounds){
+		sounds.play(sounds.arrow);
 		Vector vel = new Vector(tx1-tx2 , ty1-ty2);
 		vel.mul((1f/(float)maxThrowLength));
 		if(vel.getMag()> maxThrowVel){
 			vel.setMag(maxThrowVel);
 		}
 		arrows.get(arrows.size()-1).stopped = false;
-		sounds.play(sounds.arrow);
 	}
 	
 	public void adjustLimb(Limb limb,Arrow arrow){
@@ -158,6 +160,10 @@ public class Player {
 		float dRot = (float)Math.acos(Math.abs(Vector.dot(v1, v2)/v1.getMag()));
 		limb.rot += dRot;
 		
+	}
+	
+	public Rectangle getRect(){
+		return body.getOuterRect();
 	}
 	
 }

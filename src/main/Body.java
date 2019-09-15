@@ -3,6 +3,7 @@ package main;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 
 public class Body {
 	
@@ -45,6 +46,13 @@ public class Body {
 //		g.drawOval(leftH.x + leftH.jointX -1, leftH.y + leftH.jointY-1 , 2, 2);
 
 	}		
+	
+	public Rectangle getOuterRect(){
+		int leftw = (int)Math.max(0,leftH.w *(float)(Math.cos(leftH.rot - Math.PI)));
+		int rightw = (int)Math.max(0,rightH.w *(float)(Math.cos(rightH.rot - Math.PI)));
+		int centerw = body.w;
+		return new Rectangle(body.x - leftw , head.y-head.r,centerw+leftw+rightw,2*head.r + body.h + leftL.h);
+	}
 	
 	
 	class Head{

@@ -15,8 +15,8 @@ public class GameServer extends Thread{
 	private byte[] data;
 	private DatagramPacket packet;
 	
-	private InetAddress clientIP;
-	private int clientPort;
+//	private InetAddress clientIP;
+//	private int clientPort;
 	
 	public GameServer(){
 		try {
@@ -43,8 +43,8 @@ public class GameServer extends Thread{
 	}
 	
 	public void parsePacket(byte[] data,InetAddress ip, int port){
-		this.clientIP = ip;
-		this.clientPort = port;
+//		this.clientIP = ip;
+//		this.clientPort = port;
 		
 		String message = new String(data).trim();
 		String[] tokens = message.split("\\s+");

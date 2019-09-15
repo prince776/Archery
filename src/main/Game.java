@@ -151,9 +151,9 @@ public class Game implements Runnable{
 		g.setColor(Color.DARK_GRAY);
 		g.fillRect(0, 0, width, height);
 		
-		player.render(g,assets,this);
 		if(playerMP != null)
 			playerMP.render(g);
+		player.render(g,assets,this);
 		
 		//
 		bs.show();
