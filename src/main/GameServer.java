@@ -14,6 +14,9 @@ public class GameServer extends Thread{
 	private byte[] data;
 	private DatagramPacket packet;
 	
+	private InetAddress clientIP;
+	private int clientPort;
+	
 	public GameServer(){
 		try {
 			socket = new DatagramSocket(port);
@@ -37,6 +40,16 @@ public class GameServer extends Thread{
 		}
 	}
 	
+	public void parsePacket(byte[] data,InetAddress ip, int port){
+		this.clientIP = ip;
+		this.clientPort = port;
+		
+		String message = new String(data).trim();
+		String[] tokens = message.split("\\s+");
+		
+		String id = tokens[0];
+		
+	}
 	
 	public void sendData(byte[] data,InetAddress address,int port){
 		DatagramPacket p = new DatagramPacket(data, data.length, address,port);
