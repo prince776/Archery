@@ -10,6 +10,7 @@ import java.awt.image.BufferStrategy;
 import java.util.Scanner;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 public class Game implements Runnable{
 	
@@ -36,9 +37,12 @@ public class Game implements Runnable{
 	public GameServer server;
 	public GameClient client;
 	
-	public boolean runServer = false;
+	public boolean runServer = true;
 	
-	private Player player;
+	public static Player player;
+	public static int playerY = 250,playerX=80,player2X = 500;
+
+	public static PlayerMP playerMP;
 	
 	public static Vector gravity = new Vector(0,0.14f);
 	
@@ -86,20 +90,49 @@ public class Game implements Runnable{
 		sounds.init();
 
 		s = new Scanner(System.in);
+
+		player = new Player(playerX, playerY, Color.white, "client");
+		
+		player.name = JOptionPane.showInputDialog(null,"Enter username: ");
+		
+		if(JOptionPane.showConfirmDialog(null,"Do You Want To Run The Server?" ,"Query",1)==0){
+			runServer = true;
+			if(player.name.equalsIgnoreCase("")){
+				player.name = "Server";
+			}
+		}else{
+			runServer = false;
+			if(player.name.equalsIgnoreCase("")){
+				player.name = "Client";
+			}
+		}
 		
 		if(runServer){
-			server = new GameServer();
-			server.start();
+			initServer();
 		}else{
-			String serverIP = s.next();
-			client = new GameClient(serverIP);
-			client.start();
+			initClient();
 		}
-		player = new Player(80, 350, Color.white);
+	}
+	
+	public void initServer(){
+		server = new GameServer();
+		server.start();
+	}
+	
+	public void initClient(){
+		String serverIP = "127.0.0.1";//s.next();
+		client = new GameClient(serverIP);
+		client.start();
+		
+		String loginPacket = "00 " + player.name;
+		client.sendData(loginPacket.getBytes(), client.serverIP, GameServer.port);
+		
 	}
 	
 	public void tick(){
 		player.tick(this);
+		if(playerMP != null)
+			playerMP.tick();
 	}
 	
 	public void render(){
@@ -118,7 +151,9 @@ public class Game implements Runnable{
 		g.setColor(Color.DARK_GRAY);
 		g.fillRect(0, 0, width, height);
 		
-		player.render(g,assets);
+		player.render(g,assets,this);
+		if(playerMP != null)
+			playerMP.render(g);
 		
 		//
 		bs.show();

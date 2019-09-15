@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -9,7 +10,7 @@ import java.net.SocketException;
 public class GameServer extends Thread{
 	
 	private DatagramSocket socket;
-	public static int port =3030;
+	public static int port =3000;
 
 	private byte[] data;
 	private DatagramPacket packet;
@@ -36,6 +37,7 @@ public class GameServer extends Thread{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			parsePacket(packet.getData(), packet.getAddress(),packet.getPort());
 			
 		}
 	}
@@ -48,6 +50,12 @@ public class GameServer extends Thread{
 		String[] tokens = message.split("\\s+");
 		
 		String id = tokens[0];
+		
+		if(id.equalsIgnoreCase("00")){//LOGIN
+			Game.playerMP = new PlayerMP(Game.player2X, Game.playerY, Color.white, tokens[1]);
+			String toSend = "00 " + Game.player.name + " " + Game.player2X;
+			sendData(toSend.getBytes(), ip, port);
+		}
 		
 	}
 	

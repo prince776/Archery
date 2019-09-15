@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -11,7 +12,7 @@ import java.net.UnknownHostException;
 public class GameClient extends Thread{
 	
 	private DatagramSocket socket;
-	private InetAddress serverIP;
+	public InetAddress serverIP;
 	
 	private DatagramPacket packet;
 	private byte[] data;
@@ -35,6 +36,8 @@ public class GameClient extends Thread{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			parsePacket(packet.getData(), packet.getAddress(),packet.getPort());
+
 		}
 	}
 	
@@ -44,6 +47,14 @@ public class GameClient extends Thread{
 		String[] tokens = message.split("\\s+");
 		
 		String id = tokens[0];
+		
+		if(id.equalsIgnoreCase("00")){
+			String name = tokens[1];
+			String nameP1 = Game.player.name;
+			int x2 = toInt(tokens[2]);
+			Game.playerMP = new PlayerMP(Game.playerX, Game.playerY, Color.white, name);
+			Game.player = new Player(x2, Game.playerY, Color.WHITE, nameP1);
+		}
 		
 	}
 	
@@ -55,6 +66,15 @@ public class GameClient extends Thread{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public int toInt(String num){
+		try{
+			return Integer.parseInt(num);
+		}catch(NumberFormatException e){
+			e.printStackTrace();
+		}
+		return 0;
 	}
 	
 }

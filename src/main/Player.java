@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
@@ -9,21 +10,25 @@ import main.Body.Limb;
 public class Player {
 	
 	private Body body;
-	public ArrayList<Arrow> arrows;
+	public ArrayList<Arrow> arrows,arrowsMP;
 	public static final float maxThrowVel = 10f;//at 50 pixels length
 	public static final int maxThrowLength = 30; // per unit
 	
 	public float lastThrowVel = 0;
 	
+	
 	private int tx1,tx2,ty1,ty2;
 	
-	public Player(int x,int y, Color color){
+	public String name ;
+	
+	public Player(int x,int y, Color color,String name){
 		
 		this.body = new Body(x, y, color);
 		this.body.leftH.rot = (float)(Math.PI/3 + Math.PI);
 		this.body.rightH.rot = -(float)Math.PI/3;
 		this.arrows = new ArrayList<Arrow>();
-		
+		this.arrowsMP = new ArrayList<Arrow>();
+		this.name = name;
 	}
 	
 	public void tick(Game game){
@@ -33,13 +38,25 @@ public class Player {
 			if(arrows.get(i).outside)
 				arrows.remove(i);
 		}
+		
+		for(int i=arrowsMP.size()-1;i>=0;i--){
+			arrowsMP.get(i).tick(game);
+			if(arrowsMP.get(i).outside)
+				arrowsMP.remove(i);
+		}
+		
 		body.tick();
 	}
 	
-	public void render(Graphics g,Assets assets){
+	public void render(Graphics g,Assets assets,Game game){
 		for(int i=arrows.size()-1;i>=0;i--){
 			arrows.get(i).render(g,assets);
 		}
+		
+		for(int i=arrowsMP.size()-1;i>=0;i--){
+			arrowsMP.get(i).render(g,assets);
+		}
+		
 		body.render(g);
 		
 		g.setColor(Color.white);
@@ -52,18 +69,23 @@ public class Player {
 		
 		g.fillRect(body.leftL.x - 10, body.leftL.y+body.leftL.h + 1, 10 + body.body.w + 10, 10);
 		
-		renderPower(g);
+		renderGUI(g,game);
 		lastThrowVel = 0;
 		
 	}
 	
-	public void renderPower(Graphics g){
+	public void renderGUI(Graphics g,Game game){
 		
 		g.setColor(new Color(255-(int)((lastThrowVel/maxThrowVel)*255),(int)((lastThrowVel/maxThrowVel)*255),0));
-		g.fillRect(5, 5, (int)((lastThrowVel/maxThrowVel)*80), 15);
+		g.fillRect(game.width/2-70,game.height-15-5 , (int)((lastThrowVel/maxThrowVel)*140), 15);
 		
 		g.setColor(Color.ORANGE);
-		g.drawRect(5, 5, 80, 15);
+		g.drawRect(game.width/2-70, game.height-15-5, 140, 15);
+		
+		g.setColor(Color.white);
+		g.setFont(new Font("Verdana", Font.BOLD, 12));
+		g.drawString(name, body.head.x - 20, body.head.y - body.head.r -2);
+		
 		
 	}
 
