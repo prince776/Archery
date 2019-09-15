@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferStrategy;
+import java.util.Scanner;
 
 import javax.swing.JFrame;
 
@@ -29,7 +30,13 @@ public class Game implements Runnable{
 	public Assets assets;
 	public Sounds sounds;
 	
+	public Scanner s;
 	//
+	
+	public GameServer server;
+	public GameClient client;
+	
+	public boolean runServer = false;
 	
 	private Player player;
 	
@@ -77,7 +84,15 @@ public class Game implements Runnable{
 		
 		sounds = new Sounds();
 		sounds.init();
+
+		s = new Scanner(System.in);
 		
+		if(runServer)
+			server = new GameServer();
+		else{
+			String serverIP = s.next();
+			client = new GameClient(serverIP);
+		}
 		player = new Player(80, 350, Color.white);
 	}
 	
