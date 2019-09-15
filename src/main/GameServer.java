@@ -3,6 +3,7 @@ package main;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 
 public class GameServer extends Thread{
@@ -33,6 +34,16 @@ public class GameServer extends Thread{
 				e.printStackTrace();
 			}
 			
+		}
+	}
+	
+	
+	public void sendData(byte[] data,InetAddress address,int port){
+		DatagramPacket p = new DatagramPacket(data, data.length, address,port);
+		try {
+			socket.send(p);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	

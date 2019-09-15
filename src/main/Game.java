@@ -87,11 +87,13 @@ public class Game implements Runnable{
 
 		s = new Scanner(System.in);
 		
-		if(runServer)
+		if(runServer){
 			server = new GameServer();
-		else{
+			server.start();
+		}else{
 			String serverIP = s.next();
 			client = new GameClient(serverIP);
+			client.start();
 		}
 		player = new Player(80, 350, Color.white);
 	}

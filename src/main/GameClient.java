@@ -7,6 +7,8 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import org.omg.CosNaming.NamingContextExtPackage.AddressHelper;
+
 public class GameClient extends Thread{
 	
 	private DatagramSocket socket;
@@ -34,6 +36,15 @@ public class GameClient extends Thread{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	public void sendData(byte[] data,InetAddress address,int port){
+		DatagramPacket p = new DatagramPacket(data, data.length, address,port);
+		try {
+			socket.send(p);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
