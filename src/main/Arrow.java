@@ -47,13 +47,16 @@ public class Arrow {
 		
 		if(!hitted && !stopped){
 			if(Game.player.getRect().contains(x2,y2-100)){
+				game.sounds.play(game.sounds.arrowhit);
 				hitted = true;
 				lastTime = System.currentTimeMillis();
 			}
 			if(Game.playerMP != null){
 				 if(Game.playerMP.getRect().contains((x2+x)/2 , (y2+y-200)/2)){
+					 game.sounds.play(game.sounds.arrowhit);
 					 hitted = true;
-					lastTime = System.currentTimeMillis();
+					 lastTime = System.currentTimeMillis();
+					
 				}
 			}
 		}
