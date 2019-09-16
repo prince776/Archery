@@ -54,7 +54,15 @@ public class GameClient extends Thread{
 			int x2 = toInt(tokens[2]);
 			Game.playerMP = new PlayerMP(Game.playerX, Game.playerY, Color.white, name);
 			Game.player = new Player(x2, Game.playerY, Color.WHITE, nameP1);
+		}else if(id.equalsIgnoreCase("01")){//Arrow launch info
+			float x  = toFloat(tokens[1]);
+			float y  = toFloat(tokens[2]);
+			float vx = toFloat(tokens[3]);
+			float vy = toFloat(tokens[4]);
+			
+			Game.player.arrowsMP.add(new Arrow(new Vector(x,y), new Vector(vx,vy), new Vector(), Color.white, false));
 		}
+		
 		
 	}
 	
@@ -71,6 +79,14 @@ public class GameClient extends Thread{
 	public int toInt(String num){
 		try{
 			return Integer.parseInt(num);
+		}catch(NumberFormatException e){
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	public float toFloat(String num){
+		try{
+			return Float.parseFloat(num);
 		}catch(NumberFormatException e){
 			e.printStackTrace();
 		}

@@ -33,7 +33,7 @@ public class Player {
 	}
 	
 	public void tick(Game game){
-		getInput(game.mouseManager,game.sounds);
+		getInput(game.mouseManager,game.sounds,game);
 		for(int i=arrows.size()-1;i>=0;i--){
 			arrows.get(i).tick(game);
 			if(arrows.get(i).outside)
@@ -106,7 +106,7 @@ public class Player {
 		return 0;
 	}
 	
-	public void getInput(MouseManager mouse,Sounds sounds){
+	public void getInput(MouseManager mouse,Sounds sounds,Game game){
 		if(mouse.clicking){
 			if (tx1 == 0 || ty1 == 0){
 				tx1 = mouse.x;
@@ -134,13 +134,13 @@ public class Player {
 		}
 		if(!mouse.clicking){
 			if(tx1 !=0 && tx2 != 0)
-				launchArrow(sounds);
+				launchArrow(sounds,game);
 			tx1 = 0;
 			ty1 = 0;
 		}
 	}
 	
-	public void launchArrow(Sounds sounds){
+	public void launchArrow(Sounds sounds,Game game){
 		sounds.play(sounds.arrow);
 		Vector vel = new Vector(tx1-tx2 , ty1-ty2);
 		vel.mul((1f/(float)maxThrowLength));
@@ -148,6 +148,17 @@ public class Player {
 			vel.setMag(maxThrowVel);
 		}
 		arrows.get(arrows.size()-1).stopped = false;
+		shareArrowInfo(arrows.get(arrows.size()-1),game);
+	}
+	
+	public void shareArrowInfo(Arrow arrow,Game game){
+		String message = "01 " + arrow.pos.x +" " + arrow.pos.y + " " + arrow.vel.x + " " + arrow.vel.y;
+		if(game.runServer){
+			game.server.sendData(message.getBytes(), game.server.clientIP, game.server.clientPort);
+		}
+		else{
+			game.client.sendData(message.getBytes(), game.client.serverIP, GameServer.port);
+		}
 	}
 	
 	public void adjustLimb(Limb limb,Arrow arrow){
