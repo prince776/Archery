@@ -13,6 +13,7 @@ public class Arrow {
 	
 	public boolean outside = false,stopped = false,hitted = false;
 	public long lastTime,stoppedTime = 0 , maxTimeStopped = 3000; //once stopped
+	public static float dmgPerVel = 1;
 	
 	
 	public Arrow(Vector pos, Vector vel, Vector acc, Color color,boolean stopped){
@@ -40,23 +41,33 @@ public class Arrow {
 		dir.y = vel.y;
 		
 		int x2 = (int)pos.x + (int)((dir.x/dir.getMag())*length);		
-		int y2 = (int)pos.y + (int)((dir.y/dir.getMag())*length)+100;		
+		int y2 = (int)pos.y + (int)((dir.y/dir.getMag())*length)+200;		
 		int x  = (int)pos.x;
-		int y  = (int)pos.y+100;
+		int y  = (int)pos.y+200;
 		
 		
 		if(!hitted && !stopped){
-			if(Game.player.getRect().contains(x2,y2-100)){
+			if(Game.player.getRect().contains(x2,y2-200)){
 				game.sounds.play(game.sounds.arrowhit);
 				hitted = true;
 				lastTime = System.currentTimeMillis();
+				Game.player.health -= vel.getMag() * dmgPerVel;
+				if((  (x2-Game.player.body.head.x)*(x2-Game.player.body.head.x) +
+						(y2-Game.player.body.head.y)*(y2-Game.player.body.head.y) ) <= 
+						Game.player.body.head.r * Game.player.body.head.r )//HEADSHOT
+					Game.player.health -= vel.getMag() * dmgPerVel * 2;
+
 			}
 			if(Game.playerMP != null){
-				 if(Game.playerMP.getRect().contains((x2+x)/2 , (y2+y-200)/2)){
+				 if(Game.playerMP.getRect().contains(x2,y2-200)){
 					 game.sounds.play(game.sounds.arrowhit);
 					 hitted = true;
 					 lastTime = System.currentTimeMillis();
-					
+					Game.playerMP.health -= vel.getMag() * dmgPerVel;
+					if((  (x2-Game.playerMP.body.head.x)*(x2-Game.playerMP.body.head.x) +
+							(y2-Game.playerMP.body.head.y)*(y2-Game.playerMP.body.head.y) ) <= 
+							Game.playerMP.body.head.r * Game.playerMP.body.head.r )//HEADSHOT
+						Game.playerMP.health -= vel.getMag() * dmgPerVel * 2;
 				}
 			}
 		}
@@ -72,7 +83,7 @@ public class Arrow {
 			}
 		}
 		
-		Rectangle rect = new Rectangle(0,0,game.width,game.height+100);
+		Rectangle rect = new Rectangle(0,0,game.width,game.height+200);
 		if(!rect.contains(x,y) && ! rect.contains(x2,y2)){
 			outside = true;
 		}

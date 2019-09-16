@@ -38,6 +38,7 @@ public class Game implements Runnable{
 	public GameClient client;
 	
 	public boolean runServer = true;
+	public static boolean connected = false;
 	
 	public static Player player;
 	public static int playerY = 250,playerX=80,player2X = 500;
@@ -95,15 +96,17 @@ public class Game implements Runnable{
 		
 		player.name = JOptionPane.showInputDialog(null,"Enter username: ");
 		
-		if(JOptionPane.showConfirmDialog(null,"Do You Want To Run The Server?" ,"Query",1)==0){
+		if(JOptionPane.showConfirmDialog(null,"Do You Want To Run A Server?" ,"Query",1)==0){
 			runServer = true;
 			if(player.name.equalsIgnoreCase("")){
 				player.name = "Server";
 			}
 		}else{
 			runServer = false;
-			if(player.name.equalsIgnoreCase("")){
-				player.name = "Client";
+			if(JOptionPane.showConfirmDialog(null,"Do You Want To Join A Server?" ,"Query",1)==0){
+				if(player.name.equalsIgnoreCase("")){
+					player.name = "Client";
+				}
 			}
 		}
 		
@@ -120,7 +123,7 @@ public class Game implements Runnable{
 	}
 	
 	public void initClient(){
-		String serverIP = "127.0.0.1";//s.next();
+		String serverIP = JOptionPane.showInputDialog(null, "Enter IPAddress: ");
 		client = new GameClient(serverIP);
 		client.start();
 		
@@ -130,6 +133,7 @@ public class Game implements Runnable{
 	}
 	
 	public void tick(){
+		keyManager.tick();
 		player.tick(this);
 		if(playerMP != null)
 			playerMP.tick();
@@ -152,7 +156,7 @@ public class Game implements Runnable{
 		g.fillRect(0, 0, width, height);
 		
 		if(playerMP != null)
-			playerMP.render(g);
+			playerMP.render(g,this);
 		player.render(g,assets,this);
 		
 		//

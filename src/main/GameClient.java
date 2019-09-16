@@ -54,6 +54,7 @@ public class GameClient extends Thread{
 			int x2 = toInt(tokens[2]);
 			Game.playerMP = new PlayerMP(Game.playerX, Game.playerY, Color.white, name);
 			Game.player = new Player(x2, Game.playerY, Color.WHITE, nameP1);
+			Game.connected = true;
 		}else if(id.equalsIgnoreCase("01")){//Arrow launch info
 			float x  = toFloat(tokens[1]);
 			float y  = toFloat(tokens[2]);
@@ -61,6 +62,17 @@ public class GameClient extends Thread{
 			float vy = toFloat(tokens[4]);
 			
 			Game.player.arrowsMP.add(new Arrow(new Vector(x,y), new Vector(vx,vy), new Vector(), Color.white, false));
+		}else if(id.equalsIgnoreCase("02")){
+			Game.player.stopped = false;
+			Game.player.health = Player.maxHealth;
+			Game.playerMP.health = Player.maxHealth;
+			Game.player.arrows.clear();
+			Game.player.arrowsMP.clear();
+			Game.player.tx1 = 0;
+			Game.player.tx2 = 0;
+			Game.player.ty1 = 0;
+			Game.player.ty2 = 0;
+			
 		}
 		
 		

@@ -55,6 +55,7 @@ public class GameServer extends Thread{
 			Game.playerMP = new PlayerMP(Game.player2X, Game.playerY, Color.white, tokens[1]);
 			String toSend = "00 " + Game.player.name + " " + Game.player2X;
 			sendData(toSend.getBytes(), ip, port);
+			Game.connected = true;
 		}else if(id.equalsIgnoreCase("01")){//Arrow launch info
 			float x  = toFloat(tokens[1]);
 			float y  = toFloat(tokens[2]);

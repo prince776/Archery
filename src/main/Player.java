@@ -10,15 +10,20 @@ import main.Body.Limb;
 
 public class Player {
 	
-	private Body body;
+	public Body body;
 	public ArrayList<Arrow> arrows,arrowsMP;
 	public static final float maxThrowVel = 10f;//at 50 pixels length
 	public static final int maxThrowLength = 30; // per unit
 	
+	public static final int maxHealth = 100;
+	
 	public float lastThrowVel = 0;
 	
 	
-	private int tx1,tx2,ty1,ty2;
+	public int tx1,tx2,ty1,ty2;
+	public int health;
+	
+	public boolean stopped = false;
 	
 	public String name ;
 	
@@ -30,10 +35,25 @@ public class Player {
 		this.arrows = new ArrayList<Arrow>();
 		this.arrowsMP = new ArrayList<Arrow>();
 		this.name = name;
+		this.health = maxHealth;
 	}
 	
 	public void tick(Game game){
-		getInput(game.mouseManager,game.sounds,game);
+		
+		if(!stopped)
+			getInput(game.mouseManager,game.sounds,game);
+		if( game.runServer && Game.connected){
+			if(game.keyManager.space){
+				String message = "02";
+				game.server.sendData(message.getBytes(), game.server.clientIP, game.server.clientPort);
+				stopped = false;
+				health = maxHealth;
+				Game.playerMP.health = maxHealth;
+				arrows.clear();
+				arrowsMP.clear();
+				tx1=0;tx2=0;ty1=0;ty2=0;
+			}
+		}
 		for(int i=arrows.size()-1;i>=0;i--){
 			arrows.get(i).tick(game);
 			if(arrows.get(i).outside)
@@ -74,23 +94,60 @@ public class Player {
 		renderGUI(g,game);
 		lastThrowVel = 0;
 		
+		if(Game.connected){
+			int winner = declareWinner();
+			if (winner == 1){
+				g.drawString("WINNER: " + name, game.width/2-50, game.height/2-6);
+				stopped = true;
+			}else if(winner == 2){
+				g.drawString("WINNER: " + Game.playerMP.name, game.width/2-50, game.height/2-6);
+				stopped = true;
+			}
+		}
 	}
 	
 	public void renderGUI(Graphics g,Game game){
 		
+		//power
 		g.setColor(new Color(255-(int)((lastThrowVel/maxThrowVel)*255),(int)((lastThrowVel/maxThrowVel)*255),0));
 		g.fillRect(game.width/2-70,game.height-15-5 , (int)((lastThrowVel/maxThrowVel)*140), 15);
 		
-		g.setColor(Color.ORANGE);
+		g.setColor(Color.white);
 		g.drawRect(game.width/2-70, game.height-15-5, 140, 15);
 		
+		//name
 		g.setColor(Color.white);
 		g.setFont(new Font("Verdana", Font.BOLD, 12));
 		g.drawString(name, body.head.x - 20, body.head.y - body.head.r -2);
 		
+		int x = 5, y =5;
+		if(Game.connected){
+			if(!game.runServer){
+				x=game.width-5-100;
+				y=5;
+			}
+		}
+		
+		//health
+		g.setColor(Color.white);
+		g.fillRect(x,y,(int)(maxHealth*0.01f * health), 15);
+		
+		g.setColor(Color.gray);
+		g.drawRect(x,y, 100, 15);
+		
 		
 	}
-
+	
+	public int declareWinner(){
+		int winner = 0;
+		if(this.health <= 0)
+			winner = 2;
+		if(Game.playerMP.health <= 0)
+			winner = 1;
+		
+		return winner;
+	}
+	
 	public float calculateXOff(Vector vel){
 		float xOff = (vel.getMag()/(maxThrowVel*maxThrowLength)) * Arrow.length;
 		if(xOff >= Arrow.length)
@@ -153,10 +210,10 @@ public class Player {
 	
 	public void shareArrowInfo(Arrow arrow,Game game){
 		String message = "01 " + arrow.pos.x +" " + arrow.pos.y + " " + arrow.vel.x + " " + arrow.vel.y;
-		if(game.runServer){
+		if(game.runServer && Game.connected){
 			game.server.sendData(message.getBytes(), game.server.clientIP, game.server.clientPort);
 		}
-		else{
+		else if (!game.runServer && Game.connected){
 			game.client.sendData(message.getBytes(), game.client.serverIP, GameServer.port);
 		}
 	}
